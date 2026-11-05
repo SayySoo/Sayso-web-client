@@ -227,7 +227,7 @@ export default function Navbar() {
             <ThemeToggleButton variant="circle-blur" />
           </div>
 
-          {authLoading ? (
+         {/*  {authLoading ? (
             <div className="hidden h-9 w-9 animate-pulse rounded-full bg-muted md:block" />
           ) : user ? (
             <div className="hidden md:block">
@@ -241,7 +241,7 @@ export default function Navbar() {
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent align="end" className="w-64">
-                  {/* USER DETAILS */}
+               
                   <div className="px-3 py-3">
                     <p className="text-sm font-semibold">
                       {user.name}
@@ -287,7 +287,7 @@ export default function Navbar() {
                 Sign Up
               </Link>
             )
-          )}
+          )} */}
 
           {/* MOBILE MENU BUTTON */}
           <button
@@ -356,7 +356,7 @@ export default function Navbar() {
               Dashboard
             </Link>
 
-            <button
+           {/*  <button
               type="button"
               onClick={handleLogout}
               disabled={loggingOut}
@@ -364,7 +364,7 @@ export default function Navbar() {
             >
               <LogOut className="h-4 w-4" />
               {loggingOut ? "Logging out..." : "Log out"}
-            </button>
+            </button> */}
           </>
         ) : (
           <Link

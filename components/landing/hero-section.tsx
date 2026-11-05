@@ -101,7 +101,7 @@ export default function Hero() {
           size="lg"
           className="h-12 w-full rounded-xl px-7 text-sm shadow-[0_0_30px_rgba(37,99,235,0.25)] transition hover:shadow-[0_0_40px_rgba(37,99,235,0.4)] sm:h-14 sm:w-auto sm:rounded-2xl sm:px-8 sm:text-base"
         >
-          <Link href="#portals" className="flex items-center">
+          <Link href="https://student-webapp.subhrokolay2-0df.workers.dev/student-client/login" className="flex items-center">
             Get started
             <ArrowRight className="ml-2 size-4" />
           </Link>
