@@ -12,7 +12,7 @@ export default function Hero() {
   return (
     <section
       id="platform"
-      className="relative isolate mx-auto flex max-w-7xl flex-col items-center overflow-visible px-4 pb-16 pt-20 text-center sm:px-6 sm:pb-20 sm:pt-28"
+      className="relative isolate page-enter-item  mx-auto flex max-w-7xl flex-col items-center overflow-visible px-4 pb-16  text-center sm:px-6 sm:pb-20 sm:pt-28"
     >
       {/* Background blue glow */}
       <div

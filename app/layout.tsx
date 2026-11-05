@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import SmoothScroll from "@/components/SmoothScroll";
+import Navbar from "@/components/landing/navbar";
 
 const montserratHeading = Montserrat({subsets:['latin'],variable:'--font-heading'});
 
@@ -45,7 +46,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
        >
         <Toaster/>
        <main className="w-full min-h-screen">
+        
         <div className="">
+        
            
              <SmoothScroll>{children}</SmoothScroll>
           
