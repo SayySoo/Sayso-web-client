@@ -1,94 +1,193 @@
-'use client';
 
+"use client";
 
-import { MenuIcon, XIcon } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  MenuIcon,
+  XIcon,
+  LogOut,
+  LayoutDashboard,
+} from "lucide-react";
 
-
-import { useRouter } from "next/navigation";
-
-import { toast } from "@/components/ui/toast";
+import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, LayoutDashboard } from "lucide-react";
-import { PRODUCT_IMAGES } from '@/public/image/image';
-import ThemeToggleButton from '../ui/theme-toggle-button';
+import {
+  Avatar,
+  AvatarFallback,
+} from "@/components/ui/avatar";
 
+import { PRODUCT_IMAGES } from "@/public/image/image";
+import ThemeToggleButton from "../ui/theme-toggle-button";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: "student" | "staff" | "admin";
+  rollNumber?: string;
+  branch?: string;
+}
+
+interface MeResponse {
+  success: boolean;
+  data?: User;
+  message?: string;
+}
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
+
   const pathname = usePathname();
+  const router = useRouter();
 
- /*  const { user } = useAuth(); */
- const user = {
-    "displayName" : "subhro",
-    "email": "subhrokolay2@gmail.com"
- }
-const router = useRouter();
-
-/* const handleLogout = async () => {
-  await signOutUser();
-  toast.success("Logged out");
-  router.push("/");
-};
- */
   const links = [
     { name: "Overview", href: "/" },
     { name: "How it works", href: "/how-it-works" },
     { name: "Features", href: "/features" },
     { name: "FAQs", href: "/faqs" },
     { name: "Contact-us", href: "/contact-us" },
-    {name: "Testimonials", href: "/testimonials"}
+    { name: "Testimonials", href: "/testimonials" },
   ];
 
-  /* detect scroll */
+  // Fetch authenticated user
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchCurrentUser = async () => {
+      if (!API_URL) {
+        console.error("NEXT_PUBLIC_API_URL is not configured");
+        setAuthLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/public/me`, {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        if (response.status === 401) {
+          if (!cancelled) setUser(null);
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error("Unable to fetch authenticated user");
+        }
+
+        const result: MeResponse = await response.json();
+
+        if (!cancelled && result.success && result.data) {
+          setUser(result.data);
+        }
+      } catch (error) {
+        console.error("Authentication check failed:", error);
+
+        if (!cancelled) {
+          setUser(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setAuthLoading(false);
+        }
+      }
+    };
+
+    fetchCurrentUser();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Detect scroll
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
+
+  // Logout
+  const handleLogout = async () => {
+    if (!API_URL || loggingOut) return;
+
+    setLoggingOut(true);
+
+    try {
+      const response = await fetch(`${API_URL}/public/logout`, {
+        method: "POST",
+        credentials: "include",
+        cache: "no-store",
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Logout failed");
+      }
+
+      setUser(null);
+      setIsOpen(false);
+
+      toast.success("Logged out successfully");
+
+      router.push("http://localhost:3001/student-client/login");
+      router.refresh();
+    } catch (error) {
+      console.error("Logout error:", error);
+
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Unable to log out"
+      );
+    } finally {
+      setLoggingOut(false);
+    }
+  };
+
+  const userInitial = user?.name?.charAt(0).toUpperCase() || "U";
 
   return (
     <>
-      {/* NAVBAR */}
-
-      <nav className="sticky top-0 z-50 flex h-16 w-full items-center justify-between  lg:pl-8 lg:pr-12 bg-transparent">
-      
-
       <nav
-        className={`sticky top-0 z-50 w-full flex items-center justify-between transition-all duration-300
-        ${scrolled
-          ? "h-16 backdrop-blur-sm"
-          : "h-16 bg-transparent"}
-        pl-4 pr-4 lg:pl-8 lg:pr-12`}
+        className={`sticky top-0 z-50 flex h-16 w-full items-center justify-between transition-all duration-300 ${
+          scrolled ? "backdrop-blur-sm" : "bg-transparent"
+        } pl-4 pr-4 lg:pl-8 lg:pr-12`}
       >
-
-
         {/* LOGO */}
-        <Link href="/" className='flex items-center'>
+        <Link href="/" className="flex items-center">
           <Image
             src={PRODUCT_IMAGES.LOGO}
-            alt="Medora"
+            alt="SaySo"
             width={90}
-            height={10}
+            height={40}
             className="w-12 object-contain"
             priority
           />
-          <h1 className='font-bold text-2xl'>SaySo</h1>
+          <h1 className="text-2xl font-bold">SaySo</h1>
         </Link>
 
         {/* DESKTOP LINKS */}
@@ -100,7 +199,7 @@ const router = useRouter();
               <Link
                 key={link.name}
                 href={link.href}
-                className="relative font-semibold transition group"
+                className="group relative font-semibold transition"
               >
                 <span
                   className={`transition ${
@@ -112,9 +211,8 @@ const router = useRouter();
                   {link.name}
                 </span>
 
-                {/* animated underline */}
                 <span
-                  className={`absolute left-0 -bottom-1 h-[2px] bg-indigo-600 transition-all duration-300 ${
+                  className={`absolute -bottom-1 left-0 h-[2px] bg-indigo-600 transition-all duration-300 ${
                     isActive ? "w-full" : "w-0 group-hover:w-full"
                   }`}
                 />
@@ -123,86 +221,104 @@ const router = useRouter();
           })}
         </div>
 
-        {/* CTA */}
-<div className="flex items-center gap-2">
-  <div className='hidden md:block'>
-    <ThemeToggleButton variant="circle-blur" /> 
-  </div>
-
-  {user ? (
-    <div className='hidden md:block'>
-      <DropdownMenu>
-      <DropdownMenuTrigger >
-        <button className="h-9 w-9 rounded-full bg-blue-500 text-white font-semibold">
-          <Avatar className="h-9 w-9">
-            <AvatarFallback className="bg-blue-500 text-white">
-              {user?.displayName?.slice(0, 1)}
-            </AvatarFallback>
-          </Avatar>
-        </button>
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium">{user?.displayName}</p>
-            <p className="text-xs text-muted-foreground">{user?.email}</p>
+        {/* DESKTOP ACTIONS */}
+        <div className="flex items-center gap-3">
+          <div className="hidden md:block">
+            <ThemeToggleButton variant="circle-blur" />
           </div>
-        </DropdownMenuLabel>
 
-        <DropdownMenuSeparator />
+          {authLoading ? (
+            <div className="hidden h-9 w-9 animate-pulse rounded-full bg-muted md:block" />
+          ) : user ? (
+            <div className="hidden md:block">
+              <DropdownMenu>
+                <DropdownMenuTrigger >
+                  <Avatar className="h-9 w-9 cursor-pointer transition hover:ring-2 hover:ring-primary hover:ring-offset-2">
+                    <AvatarFallback className="bg-blue-500 font-semibold text-white">
+                      {userInitial}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
 
-        <DropdownMenuItem onClick={() => router.push("/dashboard")}>
-          <LayoutDashboard className="mr-2 h-4 w-4" />
-          Dashboard
-        </DropdownMenuItem>
+                <DropdownMenuContent align="end" className="w-64">
+                  {/* USER DETAILS */}
+                  <div className="px-3 py-3">
+                    <p className="text-sm font-semibold">
+                      {user.name}
+                    </p>
 
-        <DropdownMenuSeparator />
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {user.email}
+                    </p>
 
-        <DropdownMenuItem
-         /*  onClick={handleLogout} */
-          className="text-destructive"
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Log out
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-    </div>
-  ) : (
-    <Link
-      href="/sign-up"
-      className="hidden rounded-md bg-blue-600 text-white px-5 py-2 text-sm font-semibold transition hover:bg-blue-700 md:inline-block"
-    >
-      Sign Up
-    </Link>
-  )}
-</div>
+                    <p className="mt-1 text-xs capitalize text-muted-foreground">
+                      {user.role}
+                    </p>
+                  </div>
 
-        {/* MOBILE MENU BUTTON */}
-        <button
-          onClick={() => setIsOpen(true)}
-          className="text-gray-700 transition active:scale-90 md:hidden"
-        >
-          <MenuIcon className="size-6" />
-        </button>
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem
+                    onClick={() => router.push("http://localhost:3001/student-client/dashboard")}
+                  >
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    Dashboard
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    disabled={loggingOut}
+                    className="text-destructive"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    {loggingOut ? "Logging out..." : "Log out"}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ) : (
+            !authLoading && (
+              <Link
+                href="http://localhost:3001/student-client/login"
+                className="hidden rounded-md bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 md:inline-block"
+              >
+                Sign Up
+              </Link>
+            )
+          )}
+
+          {/* MOBILE MENU BUTTON */}
+          <button
+            type="button"
+            onClick={() => setIsOpen(true)}
+            aria-label="Open navigation menu"
+            className="text-foreground transition active:scale-90 md:hidden"
+          >
+            <MenuIcon className="size-6" />
+          </button>
+        </div>
       </nav>
 
       {/* MOBILE MENU */}
       <div
-        className={`fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-white text-lg font-medium text-gray-800 transition duration-300 md:hidden ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed inset-0 z-[60] flex flex-col items-center justify-center gap-6 bg-background text-lg font-medium transition duration-300 md:hidden ${
+          isOpen
+            ? "translate-x-0"
+            : "-translate-x-full pointer-events-none"
         }`}
       >
-        <ThemeToggleButton/>
+        <ThemeToggleButton />
+
         {links.map((link) => (
           <Link
             key={link.name}
             href={link.href}
             className={`transition ${
               pathname === link.href
-                ? "text-indigo-600 font-semibold"
-                : "text-gray-700 hover:text-black"
+                ? "font-semibold text-indigo-600"
+                : "text-foreground"
             }`}
             onClick={() => setIsOpen(false)}
           >
@@ -210,31 +326,65 @@ const router = useRouter();
           </Link>
         ))}
 
-{user ? (
-  <Link
-    href="/dashboard"
-    className="rounded-md bg-blue-400 text-white px-8 py-3 font-medium"
-    onClick={() => setIsOpen(false)}
-  >
-    Dashboard
-  </Link>
-) : (
-  <Link
-    href="/sign-up"
-    className="rounded-md bg-blue-400 text-white px-8 py-3 font-medium"
-    onClick={() => setIsOpen(false)}
-  >
-    Sign Up
-  </Link>
-)}
+        {authLoading ? (
+          <div className="h-10 w-10 animate-pulse rounded-full bg-muted" />
+        ) : user ? (
+          <>
+            <div className="flex flex-col items-center gap-1 border-t px-8 pt-5">
+              <Avatar className="mb-2 h-12 w-12">
+                <AvatarFallback className="bg-blue-500 text-white">
+                  {userInitial}
+                </AvatarFallback>
+              </Avatar>
+
+              <p className="font-semibold">{user.name}</p>
+
+              <p className="text-sm text-muted-foreground">
+                {user.email}
+              </p>
+
+              <p className="text-xs capitalize text-muted-foreground">
+                {user.role}
+              </p>
+            </div>
+
+            <Link
+              href="https://student-webapp.subhrokolay2-0df.workers.dev/student-client/dashboard"
+              className="rounded-md bg-blue-600 px-8 py-3 font-medium text-white"
+              onClick={() => setIsOpen(false)}
+            >
+              Dashboard
+            </Link>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="flex items-center gap-2 text-destructive"
+            >
+              <LogOut className="h-4 w-4" />
+              {loggingOut ? "Logging out..." : "Log out"}
+            </button>
+          </>
+        ) : (
+          <Link
+            href="https://student-webapp.subhrokolay2-0df.workers.dev/student-client/login"
+            className="rounded-md bg-blue-600 px-8 py-3 font-medium text-white"
+            onClick={() => setIsOpen(false)}
+          >
+            Sign Up
+          </Link>
+        )}
+
         <button
+          type="button"
           onClick={() => setIsOpen(false)}
-          className="absolute top-6 right-6 text-gray-700"
+          aria-label="Close navigation menu"
+          className="absolute right-6 top-6 text-foreground"
         >
           <XIcon />
         </button>
       </div>
-      </nav>
     </>
   );
 }
