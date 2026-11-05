@@ -59,7 +59,7 @@ export default function Navbar() {
     { name: "Overview", href: "/" },
     { name: "How it works", href: "/how-it-works" },
     { name: "Features", href: "/features" },
-    { name: "FAQs", href: "/faqs" },
+   
     { name: "Contact-us", href: "/contact-us" },
     { name: "Testimonials", href: "/testimonials" },
   ];
