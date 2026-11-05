@@ -1,10 +1,6 @@
 
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  
-  MessageSquare,
-} from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import { PRODUCT_IMAGES } from "@/public/image/image";
 
@@ -48,51 +44,42 @@ function GitHubIcon() {
   );
 }
 
-
 export default function Footer() {
   return (
     <footer className="relative pt-24">
       <div className="mx-auto max-w-7xl px-5 sm:px-6">
-
-        {/* Main footer */}
         <div className="grid gap-12 py-12 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr] lg:gap-20 lg:py-16">
-
-          {/* Brand */}
           <div>
-             <Link href="/" className='flex items-center'>
-          <Image
-            src={PRODUCT_IMAGES.LOGO}
-            alt="Medora"
-            width={90}
-            height={10}
-            className="w-12 object-contain"
-            priority
-          />
-          <h1 className='font-bold text-2xl'>SaySo</h1>
-        </Link>
+            <Link href="/" className="flex items-center">
+              <Image
+                src={PRODUCT_IMAGES.LOGO}
+                alt="SaySo"
+                width={90}
+                height={10}
+                className="w-12 object-contain"
+                priority
+              />
+              <h1 className="text-2xl font-bold">SaySo</h1>
+            </Link>
 
             <p className="mt-4 max-w-xs text-sm leading-7 text-muted-foreground">
               Giving every campus voice a place to be heard.
               Report, track, and resolve campus issues together.
             </p>
 
-           <Link
-  href="https://github.com/SayySoo"
-  target="_blank"
-  rel="noopener noreferrer"
-  aria-label="SaySo GitHub organization"
-  className="mt-5 inline-flex size-9 items-center justify-center rounded-full border text-muted-foreground transition hover:border-blue-500/40 hover:text-blue-500"
->
-  <GitHubIcon />
-</Link>
+            <Link
+              href="https://github.com/SayySoo"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="SaySo GitHub organization"
+              className="mt-5 inline-flex size-9 items-center justify-center rounded-full border text-muted-foreground transition hover:border-blue-500/40 hover:text-blue-500"
+            >
+              <GitHubIcon />
+            </Link>
           </div>
 
-          {/* Platform links */}
           <div>
-            <h3 className="mb-5 text-sm font-semibold">
-              Platform
-            </h3>
-
+            <h3 className="mb-5 text-sm font-semibold">Platform</h3>
             <ul className="space-y-3">
               {footerLinks.platform.map((link) => (
                 <li key={link.label}>
@@ -107,12 +94,8 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Portal links */}
           <div>
-            <h3 className="mb-5 text-sm font-semibold">
-              Portals
-            </h3>
-
+            <h3 className="mb-5 text-sm font-semibold">Portals</h3>
             <ul className="space-y-3">
               {footerLinks.portals.map((link) => (
                 <li key={link.label}>
@@ -131,15 +114,9 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom bar */}
         <div className="flex flex-col gap-3 border-t py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            © {new Date().getFullYear()} SaySo. All rights reserved.
-          </p>
-
-          <p>
-            Built to make campus voices matter.
-          </p>
+          <p>© 2026 SaySo. All rights reserved.</p>
+          <p>Built to make campus voices matter.</p>
         </div>
       </div>
     </footer>

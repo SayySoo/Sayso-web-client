@@ -259,7 +259,7 @@ export default function Navbar() {
                   <DropdownMenuSeparator />
 
                   <DropdownMenuItem
-                    onClick={() => router.push("http://localhost:3001/student-client/dashboard")}
+                    onClick={() => router.push("https://student-webapp.subhrokolay2-0df.workers.dev/student-client/dashboard")}
                   >
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     Dashboard
@@ -281,7 +281,7 @@ export default function Navbar() {
           ) : (
             !authLoading && (
               <Link
-                href="http://localhost:3001/student-client/login"
+                href="https://student-webapp.subhrokolay2-0df.workers.dev"
                 className="hidden rounded-md bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 md:inline-block"
               >
                 Sign Up
